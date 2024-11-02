@@ -56,5 +56,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Planètes', 'fa fa-globe', Planet::class);
         yield MenuItem::linkToCrud('Systèmes Solaires', 'fa fa-sun', SolarSystem::class);
         yield MenuItem::linkToCrud('Galaxies', 'fa fa-atom', Galaxy::class);
+
     }
 }

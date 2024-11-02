@@ -64,6 +64,18 @@ services:
         ports: [ "1025", "1080" ]
     ###< symfony/mailer ###
 
+    react:
+        image: node:18
+        container_name: react_app
+        volumes:
+            - ./frontend:/usr/src/app
+        working_dir: /usr/src/app
+        command: sh -c "npm install && npm start"
+        ports:
+            - '3000:3000'
+        networks:
+            - symfony
+
 volumes:
     db_data:
 
