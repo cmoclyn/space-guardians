@@ -40,6 +40,7 @@ services:
         container_name: mysql_db
         environment:
             MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_DATABASE_TEST: ${MYSQL_DATABASE_TEST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -47,6 +48,7 @@ services:
             - "3306:3306"
         volumes:
             - db_data:/var/lib/mysql
+            - ./docker/db/init.sh:/docker-entrypoint-initdb.d/init.sh
         networks:
             - symfony
 
