@@ -34,19 +34,12 @@ jobs:
                         *.cache-from=type=gha,scope=refs/heads/main
                         *.cache-to=type=gha,scope=${{github.ref}},mode=max
             -   name: Start services
-                run: docker compose up --wait --no-build
-            -   name: Copy .env.test.local
-                working-directory: ./app
-                run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+                run: docker compose up --wait --no-build --quiet-pull
             -   name: Install Dependencies
-                working-directory: ./app
-                run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+                run: docker compose run composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
             -   name: Create Database
-                working-directory: ./app
-                run: docker compose exec app php bin/console --env=test doctrine:database:create
+                run: docker compose run app php bin/console --env=test doctrine:database:create
             -   name: Execute migrations
-                working-directory: ./app
-                run: docker compose exec app php bin/console --env=test doctrine:migration:migrate --allow-no-migration --no-interaction
+                run: docker compose run app php bin/console --env=test doctrine:migration:migrate --allow-no-migration --no-interaction
             -   name: Execute tests (Unit and Feature tests) via PHPUnit
-                working-directory: ./app
-                run: docker compose exec app php bin/phpunit
+                run: docker compose run app php bin/phpunit
