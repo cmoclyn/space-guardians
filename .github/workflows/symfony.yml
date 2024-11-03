@@ -6,50 +6,48 @@
 name: Symfony
 
 on:
-  push:
-    branches: [ "dev" ]
-  pull_request:
-    branches: [ "dev" ]
+    push:
+        branches: [ "dev" ]
+    pull_request:
+        branches: [ "dev" ]
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  symfony-tests:
-    runs-on: ubuntu-latest
-    steps:
-    #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
-    # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
-    # uses: shivammathur/setup-php@v2
-    - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
-      with:
-        php-version: '8.2'
-    - uses: actions/checkout@v4
-    - name: Copy .env.test.local
-      working-directory: ./app
-      run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        working-directory: ./app
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-    - name: Install Dependencies
-      working-directory: ./app
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Create Database
-      working-directory: ./app
-      run: |
-        mkdir -p data
-        touch data/database.sqlite
-    - name: Execute migrations
-      working-directory: ./app
-      run: php bin/console doctrine:migration:migrate --allow-no-migration --no-interaction
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      working-directory: ./app
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: vendor/bin/phpunit
+    symfony-tests:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Set up Docker Buildx
+                uses: docker/setup-buildx-action@v3
+            -   name: Build Docker images
+                uses: docker/bake-action@v4
+                with:
+                    pull: true
+                    load: true
+                    files: |
+                        compose.yaml
+                        compose.override.yaml
+                    set: |
+                        *.cache-from=type=gha,scope=${{github.ref}}
+                        *.cache-from=type=gha,scope=refs/heads/main
+                        *.cache-to=type=gha,scope=${{github.ref}},mode=max
+            -   name: Start services
+                run: docker compose up --wait --no-build
+            -   name: Copy .env.test.local
+                working-directory: ./app
+                run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+            -   name: Install Dependencies
+                working-directory: ./app
+                run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+            -   name: Create Database
+                working-directory: ./app
+                run: docker compose exec app php bin/console --env=test doctrine:database:create
+            -   name: Execute migrations
+                working-directory: ./app
+                run: docker compose exec app php bin/console --env=test doctrine:migration:migrate --allow-no-migration --no-interaction
+            -   name: Execute tests (Unit and Feature tests) via PHPUnit
+                working-directory: ./app
+                run: docker compose exec app php bin/phpunit
