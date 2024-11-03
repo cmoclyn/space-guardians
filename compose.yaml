@@ -5,6 +5,7 @@ services:
         build:
             context: ./docker/php
             dockerfile: Dockerfile
+            image: space-guardians-app:local
         working_dir: /var/www/symfony
         ports:
             - '9000:9000'
