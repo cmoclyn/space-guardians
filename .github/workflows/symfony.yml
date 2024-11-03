@@ -37,7 +37,7 @@ jobs:
                 run: |
                     docker tag space-guardians-app:local space-guardians-app:latest
             -   name: Start services
-                run: docker compose up --no-build --quiet-pull
+                run: docker compose up -d --build --quiet-pull
             -   name: Install Dependencies
                 run: docker compose run composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
             -   name: Create Database
