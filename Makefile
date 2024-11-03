@@ -6,6 +6,9 @@ up:
 install:
 	${COMPOSE} run composer install
 
+test:
+	${COMPOSE} run app php bin/phpunit
+
 migration:
 	${COMPOSE} run app php bin/console make:migration
 
