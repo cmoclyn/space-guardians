@@ -23,12 +23,14 @@ jobs:
     # uses: shivammathur/setup-php@v2
     - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
       with:
-        php-version: '8.0'
+        php-version: '8.2'
     - uses: actions/checkout@v4
     - name: List Directory
       run: ls -al
     - name: Change Directory
       run: cd app
+    - name: List Directory
+      run: ls -al
     - name: Copy .env.test.local
       run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
     - name: Cache Composer packages
@@ -39,6 +41,8 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+    - name: List Directory
+      run: ls -al
     - name: Install Dependencies
       run: composer install --no-interaction --prefer-dist
     - name: Create Database
