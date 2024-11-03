@@ -40,6 +40,9 @@ jobs:
                 run: docker compose up -d --build --quiet-pull
             -   name: Install Dependencies
                 run: docker compose run composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+            -   name: Sleep for 10 seconds
+                run: sleep 10s
+                shell: bash
             -   name: Create Database
                 run: docker compose run app php bin/console --env=test doctrine:database:create
             -   name: Execute migrations
