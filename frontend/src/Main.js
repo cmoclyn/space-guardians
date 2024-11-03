@@ -1,12 +1,17 @@
 // src/Main.js
 import React from 'react';
 import AireUtilisateur from "./AireUtilisateur";
+import AirePrincipale from "./AirePrincipale";
 
 
 
 function Main() {
     return (
-        <AireUtilisateur/>
+        <div className="flex h-screen">
+            <AireUtilisateur/>
+            <AirePrincipale/>
+        </div>
+
     );
 
 }

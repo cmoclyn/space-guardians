@@ -42,7 +42,7 @@ const AireUtilisateur = () => {
     };
 
     return (
-        <div>
+        <div className="w-[15%] h-16 bg-gray-200">
             {renderContent()}
         </div>
     );
