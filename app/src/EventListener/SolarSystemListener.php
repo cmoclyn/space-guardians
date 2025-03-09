@@ -16,5 +16,6 @@ class SolarSystemListener
     {
         $solarSystem = $event->getSolarSystem();
 
+        $this->solarSystemGenerator->generateSolarSystem($solarSystem);
     }
 }

@@ -40,7 +40,7 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Symfony');
+            ->setTitle('Space Guardians');
     }
 
     public function configureMenuItems(): iterable
@@ -48,13 +48,13 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         // Section utilisateurs
-        yield MenuItem::section('Gestion des utilisateurs');
-        yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-user', Player::class);
+        yield MenuItem::section('User management');
+        yield MenuItem::linkToCrud('Users', 'fa fa-user', Player::class);
 
         // Section galaxies, systèmes solaires et planètes
-        yield MenuItem::section('Univers');
-        yield MenuItem::linkToCrud('Planètes', 'fa fa-globe', Planet::class);
-        yield MenuItem::linkToCrud('Systèmes Solaires', 'fa fa-sun', SolarSystem::class);
+        yield MenuItem::section('Universe');
+        yield MenuItem::linkToCrud('Planets', 'fa fa-globe', Planet::class);
+        yield MenuItem::linkToCrud('Solar Systems', 'fa fa-sun', SolarSystem::class);
         yield MenuItem::linkToCrud('Galaxies', 'fa fa-atom', Galaxy::class);
 
     }
