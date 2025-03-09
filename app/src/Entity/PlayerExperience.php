@@ -64,4 +64,9 @@ class PlayerExperience
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return "{$this->getQuantity()}xp {$this->getExperience()?->getName()}";
+    }
 }

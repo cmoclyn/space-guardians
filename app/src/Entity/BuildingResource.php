@@ -64,4 +64,9 @@ class BuildingResource
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return "{$this->getQuantity()} {$this->getResource()}";
+    }
 }

@@ -2,9 +2,13 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Building;
+use App\Entity\BuildingResource;
+use App\Entity\BuildingType;
 use App\Entity\Galaxy;
 use App\Entity\Planet;
 use App\Entity\Player;
+use App\Entity\Resource;
 use App\Entity\SolarSystem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -56,6 +60,19 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Planets', 'fa fa-globe', Planet::class);
         yield MenuItem::linkToCrud('Solar Systems', 'fa fa-sun', SolarSystem::class);
         yield MenuItem::linkToCrud('Galaxies', 'fa fa-atom', Galaxy::class);
+
+        // Section bâtiments
+        yield MenuItem::section('Buildings');
+        yield MenuItem::linkToCrud('Building types', 'fa fa-industry', BuildingType::class);
+        yield MenuItem::linkToCrud('Buildings', 'fa fa-industry', Building::class);
+
+        // Section bâtiments
+        yield MenuItem::section('Settings');
+        yield MenuItem::linkToCrud('Resources', 'fa fa-gem', Resource::class);
+
+        // Section actions
+        yield MenuItem::section('Actions');
+        yield MenuItem::linkToRoute('Build a building', 'fa fa-industry', 'index');
 
     }
 }

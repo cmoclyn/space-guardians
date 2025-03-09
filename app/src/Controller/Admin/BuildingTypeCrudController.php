@@ -2,9 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Player;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use App\Entity\BuildingType;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -17,27 +15,21 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
-class PlayerCrudController extends AbstractCrudController
+class BuildingTypeCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return Player::class;
+        return BuildingType::class;
     }
 
-    public function configureActions(Actions $actions): Actions
-    {
-        $actions->add('index', Action::DETAIL);
-        return $actions;
-    }
-
-    public function configureFields(string $pageName): iterable
-    {
-        return [
-            TextField::new('name'),
-            EmailField::new('email'),
-            TextField::new('password')->setFormType(PasswordType::class)->onlyOnForms(),
-            CollectionField::new('planets'),
-            CollectionField::new('playerExperiences'),
-        ];
-    }
+//    public function configureFields(string $pageName): iterable
+//    {
+//        return [
+//            TextField::new('name'),
+//            EmailField::new('email'),
+//            TextField::new('password')->setFormType(PasswordType::class)->onlyOnForms(),
+//            CollectionField::new('planets'),
+//            CollectionField::new('playerExperiences'),
+//        ];
+//    }
 }

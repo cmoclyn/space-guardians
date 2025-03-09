@@ -29,7 +29,7 @@ class Building
     /**
      * @var Collection<int, BuildingResource>
      */
-    #[ORM\OneToMany(targetEntity: BuildingResource::class, mappedBy: 'building', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: BuildingResource::class, mappedBy: 'building', cascade: ["persist"], orphanRemoval: true) ]
     private Collection $basePrices;
 
     public function __construct()
@@ -106,5 +106,10 @@ class Building
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }
