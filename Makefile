@@ -1,13 +1,20 @@
 COMPOSE := docker compose
+COMPOSER := ${COMPOSE} run composer
 PHP := ${COMPOSE} run app php
 
 up:
 	${COMPOSE} up --build -d
 
+bash:
+	${COMPOSE} exec app bash
+
 init: up migrate
 
 install:
-	${COMPOSE} run composer install
+	${COMPOSER} install
+
+require:
+	${COMPOSER} require
 
 test:
 	${PHP} bin/console doctrine:migrations:migrate --env=test --allow-no-migration --no-interaction
