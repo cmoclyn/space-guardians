@@ -58,6 +58,12 @@ class Player implements PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: PlayerTechnology::class, mappedBy: 'player', orphanRemoval: true)]
     private Collection $technologies;
 
+    /**
+     * @var Collection<int, PlayerExperience>
+     */
+    #[ORM\OneToMany(targetEntity: PlayerExperience::class, mappedBy: 'player', orphanRemoval: true)]
+    private Collection $playerExperiences;
+
     public function __construct()
     {
         $this->planets = new ArrayCollection();
@@ -65,6 +71,7 @@ class Player implements PasswordAuthenticatedUserInterface
         $this->ships = new ArrayCollection();
         $this->fleets = new ArrayCollection();
         $this->technologies = new ArrayCollection();
+        $this->playerExperiences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +271,36 @@ class Player implements PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($technology->getPlayer() === $this) {
                 $technology->setPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlayerExperience>
+     */
+    public function getPlayerExperiences(): Collection
+    {
+        return $this->playerExperiences;
+    }
+
+    public function addPlayerExperience(PlayerExperience $playerExperience): static
+    {
+        if (!$this->playerExperiences->contains($playerExperience)) {
+            $this->playerExperiences->add($playerExperience);
+            $playerExperience->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlayerExperience(PlayerExperience $playerExperience): static
+    {
+        if ($this->playerExperiences->removeElement($playerExperience)) {
+            // set the owning side to null (unless already changed)
+            if ($playerExperience->getPlayer() === $this) {
+                $playerExperience->setPlayer(null);
             }
         }
 
