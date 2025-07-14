@@ -6,10 +6,9 @@ use App\Repository\PlayerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: PlayerRepository::class)]
-class Player implements PasswordAuthenticatedUserInterface
+class Player
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,11 +18,13 @@ class Player implements PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'players')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $owner;
 
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    #[ORM\OneToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $originalOwner;
 
     /**
      * @var Collection<int, Planet>
@@ -87,30 +88,6 @@ class Player implements PasswordAuthenticatedUserInterface
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -304,6 +281,28 @@ class Player implements PasswordAuthenticatedUserInterface
             }
         }
 
+        return $this;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): Player
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getOriginalOwner(): User
+    {
+        return $this->originalOwner;
+    }
+
+    public function setOriginalOwner(User $originalOwner): Player
+    {
+        $this->originalOwner = $originalOwner;
         return $this;
     }
 }

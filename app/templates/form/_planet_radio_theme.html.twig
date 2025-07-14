@@ -1,0 +1,31 @@
+{% block choice_widget_expanded %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        {% for child in form %}
+            {% set attr = child.vars.attr %}
+            <label class="cursor-pointer">
+                {{ form_widget(child, {'attr': {'class': 'peer sr-only'}}) }}
+
+                {% set planet = child.vars.label %}
+
+                <div class="rounded-xl border p-4 bg-gray-900 transition-all
+                            hover:border-blue-500
+                            peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500">
+                <div class="flex items-center gap-4">
+{#                    <img src="{{ planet.imageUrl }}" alt="{{ planet.name }}" class="w-20 h-20 rounded-lg object-cover" />#}
+
+                    <div class="text-white">
+                        <div class="text-lg font-bold">{{ planet }}</div>
+                        <div class="text-sm text-gray-400">{{ attr['data-position'] }}</div>
+{#                        <div class="text-sm text-gray-400">{{ planet.position }}</div>#}
+{#                        <ul class="mt-2 text-sm text-green-400 list-disc list-inside">#}
+{#                            {% for bonus in planet.bonuses %}#}
+{#                                <li>{{ bonus }}</li>#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+                    </div>
+                </div>
+                </div>
+            </label>
+        {% endfor %}
+    </div>
+{% endblock %}

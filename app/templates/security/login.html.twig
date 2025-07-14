@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<div class="w-full max-w-md p-8 bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+    <h1 class="text-3xl font-bold text-center text-blue-400 mb-6 tracking-widest">Connexion</h1>
+
+    <form method="post" class="space-y-6">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3">
+                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            </div>
+        {% endif %}
+
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-300">Adresse e-mail</label>
+            <input value="{{ last_username }}" type="email" name="_username" id="email" required autocomplete="email"
+                   class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+        </div>
+
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-300">Mot de passe</label>
+            <input type="password" name="_password" id="password" required autocomplete="current-password"
+                   class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+        </div>
+
+        <div class="flex justify-between text-sm text-gray-400">
+{#            <a href="{{ path('app_forgot_password') }}" class="hover:text-blue-400">Mot de passe oublié ?</a>#}
+            <a href="{{ path('app_register') }}" class="hover:text-blue-400">Créer un compte</a>
+        </div>
+
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+        <div>
+            <button type="submit"
+                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white tracking-wide transition ease-in-out duration-200 shadow-md"
+            >
+                Se connecter
+            </button>
+        </div>
+    </form>
+{% endblock %}

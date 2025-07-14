@@ -6,7 +6,7 @@ up:
 	${COMPOSE} up --build -d
 
 bash:
-	${COMPOSE} exec app bash
+	${COMPOSE} exec php bash
 
 init: up migrate
 

@@ -1,0 +1,19 @@
+{% block form_row %}
+    <div class="mb-4">
+        {{ form_label(form, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300'}}) }}
+        <div class="mt-1">
+            {{ form_widget(form, {'attr': {'class': 'mt-1 w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+        </div>
+        {% if not compound and not form.vars.valid %}
+            {{ form_errors(form) }}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <p class="mt-1 text-sm text-red-500">
+            {{ errors|first.message }}
+        </p>
+    {% endif %}
+{% endblock %}
