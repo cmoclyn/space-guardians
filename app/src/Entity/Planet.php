@@ -46,7 +46,7 @@ class Planet
     /**
      * @var Collection<int, PlanetResource>
      */
-    #[ORM\OneToMany(targetEntity: PlanetResource::class, mappedBy: 'planet', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: PlanetResource::class, mappedBy: 'planet', cascade: ['persist'], orphanRemoval: true)]
     private Collection $resources;
 
     public function __construct()

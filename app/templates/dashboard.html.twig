@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commandement Galactique{% endblock %}
+
+{% block body %}
+    <div class="p-6 bg-gradient-to-b from-gray-900 via-black to-gray-950 text-white min-h-screen space-y-8">
+
+        {# 🧭 BARRE D'ÉTAT GLOBALE #}
+        <div class="flex flex-wrap justify-between items-center bg-gray-800 rounded-xl p-4 shadow-lg">
+            <div class="flex gap-6 items-center text-sm">
+            </div>
+            <div class="text-sm text-gray-400">
+                Heure Galactique : {{ "now"|date("H:i:s") }}
+            </div>
+        </div>
+
+        {# 🪐 PLANÈTE ACTIVE + STATS #}
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-blue-400">🌍 Planète Active : {{ activePlanet.name }}</h2>
+                <div class="text-sm text-gray-400">Coordonnées : {{ activePlanet.positionX }} - {{ activePlanet.positionY }}</div>
+                <div class="text-sm">Ressources :</div>
+                <ul class="text-sm list-disc ml-6">
+                    {% for resource in resources %}
+                        {% include 'components/resource.html.twig' with {resource: resource} %}
+                    {% endfor %}
+{#                    <li>Titane : {{ activePlanet.production.titane }}/h</li>#}
+{#                    <li>Deutérium : {{ activePlanet.production.deuterium }}/h</li>#}
+                </ul>
+                <a href="#" class="text-blue-500 text-sm hover:underline">Changer de planète</a>
+            </div>
+
+            {# 🚀 MISSIONS / FLOTTE EN COURS #}
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-purple-400">🚀 Missions en cours</h2>
+                {% if missions is not empty %}
+                    <ul class="space-y-2 text-sm">
+                        {% for mission in missions %}
+                            <li class="flex justify-between">
+                                <span>{{ mission.type }} vers {{ mission.destination.name }}</span>
+                                <span class="text-gray-400">{{ mission.remainingTime }} restantes</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-gray-400 text-sm">Aucune mission en cours.</p>
+                {% endif %}
+                <a href="#" class="text-blue-500 text-sm hover:underline">Lancer une expédition</a>
+            </div>
+        </div>
+
+        {# 🛠️ CONSTRUCTIONS EN COURS + RAPPORTS #}
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-yellow-400">🏗️ Chantier spatial</h2>
+                {% if constructions is not empty %}
+                    <ul class="text-sm list-disc ml-6">
+                        {% for construction in constructions %}
+                            <li>{{ construction.name }} ({{ construction.remainingTime }} restantes)</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-gray-400 text-sm">Aucune construction en cours.</p>
+                {% endif %}
+                <a href="#" class="text-blue-500 text-sm hover:underline">Ouvrir le chantier</a>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-green-400">📜 Derniers rapports</h2>
+                {% if reports is not empty %}
+                    <ul class="text-sm space-y-1">
+                        {% for report in reports|slice(0,3) %}
+                            <li>🔹 {{ report.title }} - <span class="text-gray-400">{{ report.date|date('d/m H:i') }}</span></li>
+                        {% endfor %}
+                    </ul>
+                    <a href="#" class="text-blue-500 text-sm hover:underline">Voir tous les rapports</a>
+                {% else %}
+                    <p class="text-gray-400 text-sm">Aucun rapport disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# 🌐 ÉVÉNEMENTS GALACTIQUES / CLASSEMENT #}
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-cyan-400">🌐 Événements Galactiques</h2>
+                {% for event in galacticEvents %}
+                    <div class="text-sm">🪐 {{ event }}</div>
+                {% else %}
+                    <p class="text-gray-400 text-sm">Rien à signaler dans l'univers.</p>
+                {% endfor %}
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
+                <h2 class="text-xl font-bold text-pink-400">🏆 Classement</h2>
+                <ul class="text-sm space-y-1">
+                    {% for player in topPlayers %}
+                        <li>{{ loop.index }}. {{ player.name }} – {{ player.score }} pts</li>
+                    {% endfor %}
+                    <li class="mt-2 text-gray-400">Vous êtes classé {{ playerRank }}ᵉ</li>
+                </ul>
+            </div>
+        </div>
+
+        {# 🎮 ACTIONS RAPIDES #}
+        <div class="bg-gray-800 rounded-xl p-4 shadow-lg flex justify-center gap-6 text-sm text-white">
+            <a href="#" class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-xl">Flottes</a>
+            <a href="#" class="bg-green-700 hover:bg-green-600 px-4 py-2 rounded-xl">Technologies</a>
+            <a href="#" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-xl">Recherche</a>
+            <a href="#" class="bg-pink-700 hover:bg-pink-600 px-4 py-2 rounded-xl">Diplomatie</a>
+        </div>
+
+    </div>
+{% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Player;
 use App\Entity\User;
 use App\Form\RegistrationUserType;
+use App\Service\PlanetService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +36,7 @@ class SecurityController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $em,
+        PlanetService $planetService
     ): Response {
         $user = new User();
 
@@ -44,14 +46,14 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $planet = $form->get('originalPlayer')->get('planets')->getData();
 
-
             $player = $user->getOriginalPlayer();
-            $player->addPlanet($planet);
             $player->setOriginalOwner($user);
             $user->addPlayer($player);
 
             $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
             $user->setPassword($hashedPassword);
+
+            $planetService->colonizePlanet($player, $planet);
 
             $em->persist($user);
             $em->flush();

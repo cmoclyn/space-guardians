@@ -8,6 +8,9 @@ up:
 bash:
 	${COMPOSE} exec php bash
 
+watch:
+	${COMPOSE} exec php php bin/console tailwind:build --watch
+
 init: up migrate
 
 install:

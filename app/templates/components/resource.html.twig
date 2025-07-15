@@ -1,0 +1,31 @@
+<div {{ stimulus_controller('resource', {
+    'quantity': resource.quantity,
+    'production': resource.production,
+    'date': resource.date.getTimestamp()
+}) }}>
+
+    {% set uid = random() %}
+    {% set tooltipName = 'tooltip-' ~ resource.name ~ '-' ~uid %}
+    <div class="flex items-center gap-2">
+        <div {{ stimulus_controller('tooltip') }}>
+        <span data-resource-target="quantity"
+              data-action="mouseenter->tooltip#show mouseleave->tooltip#hide">{{ resource.quantity|number_format(0, '.', ' ') }}</span>
+
+            <div data-tooltip-target="tooltip">
+                +{{ resource.production|number_format(2) }}/h
+            </div>
+        </div>
+
+        <div {{ stimulus_controller('tooltip') }}>
+            <img src="{{ asset('uploads/images/resource/' ~ resource.image) }}"
+                 alt="{{ resource.name }}"
+                 data-action="mouseenter->tooltip#show mouseleave->tooltip#hide"
+                 class="w-6 h-6"
+            />
+
+            <div data-tooltip-target="tooltip">
+                {{ resource.name }}
+            </div>
+        </div>
+    </div>
+</div>
