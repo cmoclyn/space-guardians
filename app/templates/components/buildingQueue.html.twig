@@ -1,0 +1,9 @@
+{% if constructions is not empty %}
+    <ul class="text-sm list-disc ml-6">
+        {% for construction in constructions %}
+            <li>{{ construction.name }} ({{ construction.remainingTime }} restantes)</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-gray-400 text-sm">Aucune construction en cours.</p>
+{% endif %}

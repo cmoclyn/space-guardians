@@ -3,8 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Planet;
+use App\Entity\PlanetBuildings;
 use App\Entity\PlanetResource;
 use App\Entity\Player;
+use App\Repository\BuildingRepository;
 use App\Repository\PlanetRepository;
 use App\Repository\ResourceRepository;
 use DateTime;
@@ -14,6 +16,7 @@ readonly class PlanetService
     public function __construct(
         private PlanetRepository $planetRepository,
         private ResourceRepository $resourceRepository,
+        private BuildingRepository $buildingRepository,
     ) {}
 
     /**
@@ -33,7 +36,15 @@ readonly class PlanetService
         $player->addPlanet($planet);
         $planet->setOwner($player);
 
-        foreach($this->resourceRepository->findAll() as $resource) {
+        $this->initResources($planet);
+        $this->initBuildings($planet);
+
+        return true;
+    }
+
+    private function initResources(Planet $planet): void
+    {
+        foreach ($this->resourceRepository->findAll() as $resource) {
             $planetResource = new PlanetResource();
             $planetResource->setResource($resource);
             $planetResource->setDate(new DateTime());
@@ -42,7 +53,17 @@ readonly class PlanetService
 
             $planet->addResource($planetResource);
         }
+    }
 
-        return true;
+    private function initBuildings(Planet $planet): void
+    {
+        foreach ($this->buildingRepository->findAll() as $building) {
+            $planetBuilding = new PlanetBuildings();
+            $planetBuilding->setBuilding($building);
+            $planetBuilding->setPlanet($planet);
+            $planetBuilding->setLevel(0);
+
+            $planet->addBuilding($planetBuilding);
+        }
     }
 }

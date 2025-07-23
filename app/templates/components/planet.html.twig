@@ -1,0 +1,7 @@
+<div {{ stimulus_controller('tooltip', {'position': 'bottom'}) }}>
+    <h2 class="text-xl font-bold text-blue-400"
+        data-action="mouseenter->tooltip#show mouseleave->tooltip#hide">🌍 {{ planet.name }}</h2>
+    <div data-tooltip-target="tooltip">
+        <div class="text-sm text-gray-400">Coordonnées : {{ planet.positionX }} - {{ planet.positionY }}</div>
+    </div>
+</div>

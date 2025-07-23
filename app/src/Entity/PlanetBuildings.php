@@ -107,4 +107,14 @@ class PlanetBuildings
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s on %s (%d)',
+            $this->getBuilding()?->getName(),
+            $this->getPlanet()?->getName(),
+            $this->getLevel()
+        );
+    }
 }

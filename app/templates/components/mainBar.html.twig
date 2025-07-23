@@ -1,0 +1,16 @@
+{% set player = app.user.originalPlayer %}
+{% set planet = player.planets[0] %}
+<div class="flex flex-wrap justify-between items-center bg-gray-800 rounded-xl p-4 shadow-lg">
+    <div class="flex flex-1 items-center">
+        {% include 'components/planet.html.twig' with {planet: planet} %}
+        <ul class="text-sm flex gap-4 ml-6">
+            {% for resource in resources %}
+                {% include 'components/resource.html.twig' with {resource: resource, tooltipDirection: 'bottom'} %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="flex flex-1 items-center justify-center">
+    {% include 'components/buildingQueue.html.twig' with {planet: planet} %}
+    </div>
+    <div class="flex flex-1 items-center justify-center">{{ app.user.originalPlayer.name }}</div>
+</div>

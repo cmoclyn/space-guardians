@@ -3,30 +3,13 @@
 {% block title %}Commandement Galactique{% endblock %}
 
 {% block body %}
-    <div class="p-6 bg-gradient-to-b from-gray-900 via-black to-gray-950 text-white min-h-screen space-y-8">
+    <div class="bg-gradient-to-b from-gray-900 via-black to-gray-950 text-white min-h-screen space-y-8">
 
         {# 🧭 BARRE D'ÉTAT GLOBALE #}
-        <div class="flex flex-wrap justify-between items-center bg-gray-800 rounded-xl p-4 shadow-lg">
-            <div class="flex gap-6 items-center text-sm">
-            </div>
-            <div class="text-sm text-gray-400">
-                Heure Galactique : {{ "now"|date("H:i:s") }}
-            </div>
-        </div>
 
         {# 🪐 PLANÈTE ACTIVE + STATS #}
         <div class="grid md:grid-cols-2 gap-6">
             <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
-                <h2 class="text-xl font-bold text-blue-400">🌍 Planète Active : {{ activePlanet.name }}</h2>
-                <div class="text-sm text-gray-400">Coordonnées : {{ activePlanet.positionX }} - {{ activePlanet.positionY }}</div>
-                <div class="text-sm">Ressources :</div>
-                <ul class="text-sm list-disc ml-6">
-                    {% for resource in resources %}
-                        {% include 'components/resource.html.twig' with {resource: resource} %}
-                    {% endfor %}
-{#                    <li>Titane : {{ activePlanet.production.titane }}/h</li>#}
-{#                    <li>Deutérium : {{ activePlanet.production.deuterium }}/h</li>#}
-                </ul>
                 <a href="#" class="text-blue-500 text-sm hover:underline">Changer de planète</a>
             </div>
 
@@ -62,7 +45,7 @@
                 {% else %}
                     <p class="text-gray-400 text-sm">Aucune construction en cours.</p>
                 {% endif %}
-                <a href="#" class="text-blue-500 text-sm hover:underline">Ouvrir le chantier</a>
+                <a href="{{ url('buildling') }}" class="text-blue-500 text-sm hover:underline">Ouvrir le chantier</a>
             </div>
 
             <div class="bg-gray-800 rounded-xl p-6 shadow-lg space-y-2">
