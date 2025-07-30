@@ -1,0 +1,11 @@
+<div
+    {{ stimulus_controller('fragments--resource', {
+        'planet': planet.id,
+        'resource': resource.id
+    }) }}
+    {{ stimulus_action('fragments--resource', 'refresh', 'buildingQueue:started@document') }}
+>
+    <div {{ stimulus_target('fragments--resource', 'resource') }}>
+        {% include 'components/resource.html.twig' %}
+    </div>
+</div>

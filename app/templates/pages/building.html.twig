@@ -4,13 +4,14 @@
 
 {% block body %}
     <div class="bg-gradient-to-b from-gray-900 via-black to-gray-950 text-white min-h-screen space-y-8">
-
+        {% set player = app.user.originalPlayer %}
+        {% set planet = player.planets[0] %}
         {# 🪐 PLANÈTE ACTIVE + STATS #}
         <div class="grid md:grid-cols-2 gap-6">
             {% if buildlings is not empty %}
-                    {% for building in buildlings %}
-                        {% include 'components/building.html.twig' with {building: building, tooltipDirection: 'bottom'} %}
-                    {% endfor %}
+                {% for building in buildlings %}
+                    {% include 'components/building.html.twig' with {planet: planet, building: building, tooltipDirection: 'bottom'} %}
+                {% endfor %}
             {% else %}
                 <p class="text-gray-400 text-sm">Aucun bâtiment disponible.</p>
             {% endif %}

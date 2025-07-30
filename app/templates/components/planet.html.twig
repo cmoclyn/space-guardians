@@ -1,7 +1,26 @@
-<div {{ stimulus_controller('tooltip', {'position': 'bottom'}) }}>
-    <h2 class="text-xl font-bold text-blue-400"
-        data-action="mouseenter->tooltip#show mouseleave->tooltip#hide">🌍 {{ planet.name }}</h2>
-    <div data-tooltip-target="tooltip">
-        <div class="text-sm text-gray-400">Coordonnées : {{ planet.positionX }} - {{ planet.positionY }}</div>
+{% set resources = [] %}
+{% for planetResource in planet.resources %}
+    {% set resources = resources | merge([planetResource.resource]) %}
+{% endfor %}
+
+<div class="flex-column justify-items-center">
+    <div class="flex flex-wrap justify-between items-center">
+        <div {{ stimulus_controller('tooltip', {'position': 'bottom'}) }}>
+            <h2 class="text-xl font-bold text-blue-400"
+                data-action="mouseenter->tooltip#show mouseleave->tooltip#hide">🌍 {{ planet.name }}</h2>
+            <div data-tooltip-target="tooltip">
+                <div class="text-sm text-gray-400">Coordonnées : {{ planet.positionX }} - {{ planet.positionY }}</div>
+            </div>
+        </div>
+
+        <ul class="text-sm flex gap-4 ml-6">
+            {% for resource in resources %}
+                {% include 'fragments/resource.html.twig' with {planet: planet, resource: resource} %}
+                {#                {% include 'components/resource.html.twig' with {resource: resource, tooltipDirection: 'bottom'} %} #}
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        {% include 'fragments/buildingQueue.html.twig' with {planet: planet} %}
     </div>
 </div>

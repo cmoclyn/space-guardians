@@ -1,5 +1,7 @@
 <div
         {{ stimulus_controller('building', {
+            'planet': planet.id,
+            'building': building.id,
             'buildingCosts': building.prices
         }) }}
         class="bg-gray-900 text-white p-4 rounded-xl shadow-md space-y-4"
@@ -19,7 +21,7 @@
             {% for price in building.prices %}
                 <li class="flex items-center justify-between">
                     <span class="text-sm text-gray-300">{{ price.resourceName|capitalize }}</span>
-                    <span class="text-sm font-mono" data-resource="{{ price.resourceName }}">{{ price.quantity }}</span>
+                    <span class="text-sm font-mono" data-resource="{{ price.resourceName }}">{{ price.quantity|number_format(0, ',', ' ') }}</span>
                 </li>
             {% endfor %}
         </ul>
@@ -27,6 +29,7 @@
 
     <button
             {{ stimulus_target('building', 'buildButton') }}
+            {{ stimulus_action('building', 'build', 'click') }}
             type="button"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed transition"
             disabled

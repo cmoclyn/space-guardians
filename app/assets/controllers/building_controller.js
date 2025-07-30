@@ -3,6 +3,8 @@ import {Controller} from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = ['buildButton', 'cost'];
     static values = {
+        planet: Number,
+        building: Number,
         buildingCosts: Array
     }
 
@@ -33,5 +35,31 @@ export default class extends Controller {
             }
         });
         return canBuild;
+    }
+
+    async build() {
+        if (!this.canBuild()) {
+            return;
+        }
+
+        const response = await fetch(`/planet/${this.planetValue}/build/${this.buildingValue}`, {
+            method: 'POST',
+        });
+
+        if (response.status === 204) {
+            console.log('Construction lancée !');
+            const event = new CustomEvent('buildingQueue:started', {
+                bubbles: true,
+                detail: {}
+            });
+            document.dispatchEvent(event);
+
+        } else if (response.status === 400) {
+            console.log('error', await response.text());
+        } else {
+            console.warn('Erreur lors de la construction', await response.text());
+        }
+
+        document.dispatchEvent(new CustomEvent('flash:show'));
     }
 }

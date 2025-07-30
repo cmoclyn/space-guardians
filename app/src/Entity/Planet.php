@@ -189,6 +189,15 @@ class Planet
         return $this->resources;
     }
 
+    public function getResource(Resource $resource): ?PlanetResource
+    {
+        return $this->getResources()->findFirst(
+            function (int $index, PlanetResource $planetResource) use ($resource): bool {
+                return $planetResource->getResource() === $resource;
+            },
+        );
+    }
+
     public function addResource(PlanetResource $resource): static
     {
         if (!$this->resources->contains($resource)) {

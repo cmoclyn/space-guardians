@@ -14,9 +14,9 @@
         {{ importmap() }}
     {% endblock %}
 </head>
-<body class="bg-gradient-to-b from-black to-gray-900 text-white min-h-screen font-sans">
+<body {{ stimulus_controller('flash') }} class="bg-gradient-to-b from-black to-gray-900 text-white min-h-screen font-sans">
 {% if app.user is not null %}
-    {% include 'components/mainBar.html.twig' with {activePlanet: activePlanet, resources: resources} %}
+    {% include 'components/mainBar.html.twig' %}
 {% endif %}
 <div class="flex items-center justify-center ">
     {% block body %}{% endblock %}

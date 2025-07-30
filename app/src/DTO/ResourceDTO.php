@@ -15,12 +15,12 @@ readonly class ResourceDTO
     private float $maximum;
     private DateTimeInterface $date;
 
-    public function __construct(PlanetResource $planetResource)
+    public function __construct(PlanetResource $planetResource, float $production)
     {
         $this->name = $planetResource->getResource()?->getName() ?? '';
         $this->image = $planetResource->getResource()?->getImage() ?? '';
         $this->quantity = $planetResource->getQuantity();
-        $this->production = 1000 * $planetResource->getResource()->getCoef();
+        $this->production = $production;
         $this->maximum = 50000;
         $this->date = $planetResource->getDate() ?? new DateTime();
     }
