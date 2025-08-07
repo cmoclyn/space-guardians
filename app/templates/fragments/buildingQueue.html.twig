@@ -1,4 +1,7 @@
 <div {{ stimulus_controller('fragments--building-queue', {
     'planet': planet.id
 }) }}>
+    <div {{ stimulus_target('fragments--building-queue', 'buildingQueue') }}>
+        {% include 'components/buildingQueue.html.twig' %}
+    </div>
 </div>

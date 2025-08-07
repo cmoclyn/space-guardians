@@ -220,6 +220,13 @@ class Planet
         return $this;
     }
 
+    public function getCurrentQueue(): ?QueueBuilding
+    {
+        return $this->getBuildings()->findFirst(function (int $index, PlanetBuildings $planetBuildings): bool {
+            return null !== $planetBuildings->getQueue();
+        })?->getQueue();
+    }
+
     public function __toString(): string
     {
         return $this->getName();

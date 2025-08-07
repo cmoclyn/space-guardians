@@ -1,0 +1,39 @@
+{% extends '@!EasyAdmin/crud/detail.html.twig' %}
+
+    {% block head_javascript %}
+        {{ parent() }}
+        {{ importmap() }}
+    {% endblock %}
+{% block content %}
+    {{ parent() }}
+    <br/>
+    <div class="flex flex-column">
+        <div class="flex flex-row">
+            <div class="flex-1">
+                <h2 class="mt-4">Courbe des coûts</h2>
+                {{ render_chart(costChart) }}
+            </div>
+
+            <div class="flex-1">
+                <h2 class="mt-4">Temps de construction</h2>
+                {{ render_chart(timeChart) }}
+            </div>
+        </div>
+
+        <div class="flex flex-row">
+            {% if productionChart %}
+                <div class="flex-1">
+                    <h2 class="mt-4">Production</h2>
+                    {{ render_chart(productionChart) }}
+                </div>
+            {% endif %}
+
+            {% if storageChart %}
+                <div class="flex-1">
+                    <h2 class="mt-4">Stockage</h2>
+                    {{ render_chart(storageChart) }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

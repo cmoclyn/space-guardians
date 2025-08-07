@@ -26,16 +26,8 @@ class PlanetBuildings
     #[ORM\Column]
     private ?int $level = null;
 
-    /**
-     * @var Collection<int, QueueBuilding>
-     */
-    #[ORM\OneToMany(targetEntity: QueueBuilding::class, mappedBy: 'planetBuilding', orphanRemoval: true)]
-    private Collection $queues;
-
-    public function __construct()
-    {
-        $this->queues = new ArrayCollection();
-    }
+    #[ORM\OneToOne(inversedBy: 'planetBuildings', cascade: ['persist', 'remove'])]
+    private ?QueueBuilding $queue = null;
 
     public function getId(): ?int
     {
@@ -78,36 +70,6 @@ class PlanetBuildings
         return $this;
     }
 
-    /**
-     * @return Collection<int, QueueBuilding>
-     */
-    public function getQueues(): Collection
-    {
-        return $this->queues;
-    }
-
-    public function addQueue(QueueBuilding $queue): static
-    {
-        if (!$this->queues->contains($queue)) {
-            $this->queues->add($queue);
-            $queue->setPlanetBuilding($this);
-        }
-
-        return $this;
-    }
-
-    public function removeQueue(QueueBuilding $queue): static
-    {
-        if ($this->queues->removeElement($queue)) {
-            // set the owning side to null (unless already changed)
-            if ($queue->getPlanetBuilding() === $this) {
-                $queue->setPlanetBuilding(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function __toString(): string
     {
         return sprintf(
@@ -116,5 +78,17 @@ class PlanetBuildings
             $this->getPlanet()?->getName(),
             $this->getLevel()
         );
+    }
+
+    public function getQueue(): ?QueueBuilding
+    {
+        return $this->queue;
+    }
+
+    public function setQueue(?QueueBuilding $queue): static
+    {
+        $this->queue = $queue;
+
+        return $this;
     }
 }

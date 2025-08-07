@@ -1,6 +1,7 @@
 import {Controller} from '@hotwired/stimulus';
 
 export default class extends Controller {
+    static targets = ['buildingQueue'];
     static values = {
         planet: Number
     };
@@ -10,12 +11,16 @@ export default class extends Controller {
     }
 
     async refresh() {
-        // const response = await fetch(`/planet/${this.planetValue}/buildingQueue`)
-        // const html = await response.text();
-        //
-        // const template = document.createElement('template')
-        // template.innerHTML = html.trim()
-        //
-        // this.element.replaceWith(template.content.firstElementChild)
+        const response = await fetch(`/planet/${this.planetValue}/buildingQueue`);
+        const data = await response.json();
+
+        const buildingQueueElement = this.buildingQueueTarget;
+        const buildingQueueController = this.application.getControllerForElementAndIdentifier(buildingQueueElement.querySelector('[data-controller~="building-queue"]'), 'building-queue');
+
+        if (buildingQueueController) {
+            buildingQueueController.load(data);
+        } else {
+            console.warn('Resource controller not found');
+        }
     }
 }

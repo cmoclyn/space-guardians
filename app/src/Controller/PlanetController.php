@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\DTO\QueueBuildingDTO;
+use App\Entity\Building;
 use App\Entity\Planet;
+use App\Entity\PlanetBuildings;
 use App\Entity\Resource;
 use App\Entity\User;
 use App\Service\ResourceService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -18,14 +22,28 @@ class PlanetController extends AbstractController
     ) {}
 
     #[Route('/planet/{planet}/resource/{resource}', name: 'planet_resource')]
-    public function planetResource(Planet $planet, Resource $resource, #[CurrentUser] User $user): Response
+    public function planetResource(Planet $planet, Resource $resource, #[CurrentUser] User $user): JsonResponse
     {
-        if(!$user->getPlayers()->contains($planet->getOwner())){
+        if (!$user->getPlayers()->contains($planet->getOwner())) {
             throw $this->createAccessDeniedException();
         }
 
         $resourceProduction = $this->resourceService->getResourceProduction($planet, $resource);
 
         return $this->json($resourceProduction);
+    }
+
+    #[Route('/planet/{planet}/buildingQueue', name: 'planet_building_queue')]
+    public function buildingQueue(Planet $planet, #[CurrentUser] User $user): JsonResponse
+    {
+        if (!$user->getPlayers()->contains($planet->getOwner())) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if(null === $planet->getCurrentQueue()){
+            return $this->json([]);
+        }
+
+        return $this->json(new QueueBuildingDTO($planet->getCurrentQueue()));
     }
 }

@@ -11,7 +11,7 @@ export default class extends Controller {
     currentResources = [];
 
     connect() {
-        document.addEventListener('resource:updated', this.resourceUpdated)
+        document.addEventListener('resource:updated', this.resourceUpdated);
     }
 
     disconnect() {

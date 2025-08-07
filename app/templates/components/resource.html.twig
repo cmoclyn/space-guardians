@@ -8,7 +8,6 @@
 
         <div {{ stimulus_controller('tooltip', {position: tooltipDirection}) }}>
             <img {{ stimulus_target('resource', 'image') }}
-{#                    src="{{ asset('uploads/images/resource/' ~ resource.image) }}"#}
                  data-action="mouseenter->tooltip#show mouseleave->tooltip#hide"
                  class="w-6 h-6"
             />

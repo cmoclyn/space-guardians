@@ -1,11 +1,11 @@
-
-{% if building is not empty %}
-    <div {{ stimulus_controller('building-queue', {
-    'startedAt': buildling.startedAt.getTimestamp(),
-    'finishedAt': buildling.finishedAt.getTimestamp(),
-}) }}>
-        {{ building.name }} (<span {{ stimulus_target('building-queue', 'remainingTime') }}></span>)
+<div {{ stimulus_controller('building-queue') }}>
+    <small {{ stimulus_target('building-queue', 'name') }}></small>
+    <small {{ stimulus_target('building-queue', 'remainingTime') }}></small>
+    <div class="w-full h-2 bg-gray-800 rounded mt-2">
+        <div
+                {{ stimulus_target('building-queue', 'progressBar') }}
+                class="h-full bg-blue-500 rounded transition-all duration-500 ease-out"
+                style="width: 0%;"
+        ></div>
     </div>
-{% else %}
-    <p class="text-gray-400 text-sm">Aucune construction en cours.</p>
-{% endif %}
+</div>

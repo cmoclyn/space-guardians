@@ -3,6 +3,7 @@ import {Controller} from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = ['quantity', 'production', 'name', 'image'];
 
+    name = '';
     resource = 0;
     quantity = 0;
     production = 0;
@@ -37,7 +38,7 @@ export default class extends Controller {
         const event = new CustomEvent('resource:updated', {
             bubbles: true,
             detail: {
-                name: this.nameValue,
+                name: this.name,
                 quantity: this.getQuantity(),
             }
         });
@@ -61,6 +62,7 @@ export default class extends Controller {
 
     load(resource) {
         this.clear();
+        this.name = resource.name;
         this.quantity = resource.quantity;
         this.production = resource.production;
         this.maximum = resource.maximum;

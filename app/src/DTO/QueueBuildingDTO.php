@@ -7,7 +7,6 @@ use DateTimeImmutable;
 
 readonly class QueueBuildingDTO
 {
-    private int $id;
     private string $name;
     private int $level;
     private DateTimeImmutable $startedAt;
@@ -15,16 +14,10 @@ readonly class QueueBuildingDTO
 
     public function __construct(QueueBuilding $queueBuilding)
     {
-        $this->id = $queueBuilding->getId();
-        $this->name = $queueBuilding->getPlanetBuilding()?->getBuilding()?->getName();
-        $this->level = $queueBuilding->getPlanetBuilding()?->getLevel();
+        $this->name = $queueBuilding->getPlanetBuildings()?->getBuilding()?->getName();
+        $this->level = $queueBuilding->getPlanetBuildings()?->getLevel();
         $this->startedAt = $queueBuilding->getStartedAt();
         $this->finishedAt = $queueBuilding->getFinishedAt();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getName(): string

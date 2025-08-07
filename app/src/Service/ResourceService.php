@@ -30,7 +30,10 @@ readonly class ResourceService
     public function getResourcesProduction(Planet $planet): array
     {
         return $planet->getResources()->map(function (PlanetResource $planetResource) use ($planet): ResourceDTO {
-            return new ResourceDTO($planetResource, $this->calculateProductionPerHour($planet, $planetResource->getResource()));
+            return new ResourceDTO(
+                $planetResource,
+                $this->calculateProductionPerHour($planet, $planetResource->getResource()),
+            );
         })->toArray();
     }
 
@@ -59,11 +62,26 @@ readonly class ResourceService
             },
         );
 
-        $baseProduction = 100;
-        $scalingExponent = 1.5;
+        return $this->calculateProductionForBuilding(
+            $planetBuildingForResource->getBuilding(),
+            $planetBuildingForResource->getLevel(),
+        );
+    }
 
-        $production = $baseProduction * ($planetBuildingForResource->getLevel() ** $scalingExponent);
-        return $production * $resource->getCoef();
+    public function calculateProductionForBuilding(Building $building, int $level): float
+    {
+        /** @var Resource $resource */
+        $resource = match ($building->getName()) {
+            'Fonderie de titane' => $this->resourceRepository->findOneBy(['name' => 'Titane']),
+            'Extracteur de deutérium' => $this->resourceRepository->findOneBy(['name' => 'Deutérium']),
+            default => throw new UnexpectedValueException($building->getName()),
+        };
+
+        $baseProduction = 100;
+        $production = ($baseProduction * $level * 0.75) ** 2;
+        $production *= (1 / $resource->getCoef()) ** 0.6;
+
+        return round($production);
     }
 
     public function getActualResource(Planet $planet, Resource $resource, DateTimeInterface $dateTime): float
@@ -78,16 +96,41 @@ readonly class ResourceService
         return min($planetResource->getQuantity() + $produced, 50000); // TODO Use storage building
     }
 
-    public function updatePlanetResources(Planet $planet, Resource $resource): void
-    {
+    public function updatePlanetResources(
+        Planet $planet,
+        Resource $resource,
+        DateTimeInterface $date = new DateTime(),
+    ): void {
         $planetResource = $planet->getResource($resource);
         if (null === $planetResource) {
             return;
         }
-        $date = new DateTime();
         $planetResource->setQuantity($this->getActualResource($planet, $resource, $date));
         $planetResource->setDate($date);
         $this->entityManager->persist($planetResource);
         $this->entityManager->flush();
+    }
+
+    public function roundToNiceNumber(float $value): int
+    {
+        if ($value <= 0) {
+            return 0;
+        }
+
+        // Trouve la puissance de 10 la plus proche
+        $exponent = floor(log10($value));
+        $base = 10 ** $exponent;
+
+        // Choix de jolis multiples
+        $multipliers = [1, 2, 2.5, 5, 7.5, 10];
+
+        foreach ($multipliers as $m) {
+            if ($value <= $m * $base) {
+                return (int)($m * $base);
+            }
+        }
+
+        // Sinon on arrondit au multiple de 10 supérieur
+        return (int)(10 * $base);
     }
 }

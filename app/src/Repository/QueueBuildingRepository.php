@@ -16,6 +16,16 @@ class QueueBuildingRepository extends ServiceEntityRepository
         parent::__construct($registry, QueueBuilding::class);
     }
 
+    public function getFinishedBuildings(): array
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.finishedAt <= :now')
+            ->setParameter('now', new \DateTime('now'))
+            ->orderBy('b.finishedAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return QueueBuilding[] Returns an array of QueueBuilding objects
     //     */

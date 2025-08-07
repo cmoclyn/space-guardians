@@ -22,7 +22,6 @@ export default class extends Controller {
     async refresh() {
         const response = await fetch(`/planet/${this.planetValue}/resource/${this.resourceValue}`);
         const data = await response.json();
-        console.log('Data received:', data);
 
         const resourceElement = this.resourceTarget;
         const resourceController = this.application.getControllerForElementAndIdentifier(resourceElement.querySelector('[data-controller~="resource"]'), 'resource');

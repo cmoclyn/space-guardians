@@ -13,31 +13,18 @@ class QueueBuilding
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'queue')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?PlanetBuildings $planetBuilding = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $finishedAt = null;
 
+    #[ORM\OneToOne(mappedBy: 'queue', cascade: ['persist'])]
+    private ?PlanetBuildings $planetBuildings = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getPlanetBuilding(): ?PlanetBuildings
-    {
-        return $this->planetBuilding;
-    }
-
-    public function setPlanetBuilding(?PlanetBuildings $planetBuilding): static
-    {
-        $this->planetBuilding = $planetBuilding;
-
-        return $this;
     }
 
     public function getStartedAt(): ?\DateTimeImmutable
@@ -60,6 +47,28 @@ class QueueBuilding
     public function setFinishedAt(\DateTimeImmutable $finishedAt): static
     {
         $this->finishedAt = $finishedAt;
+
+        return $this;
+    }
+
+    public function getPlanetBuildings(): ?PlanetBuildings
+    {
+        return $this->planetBuildings;
+    }
+
+    public function setPlanetBuildings(?PlanetBuildings $planetBuildings): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($planetBuildings === null && $this->planetBuildings !== null) {
+            $this->planetBuildings->setQueue(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($planetBuildings !== null && $planetBuildings->getQueue() !== $this) {
+            $planetBuildings->setQueue($this);
+        }
+
+        $this->planetBuildings = $planetBuildings;
 
         return $this;
     }

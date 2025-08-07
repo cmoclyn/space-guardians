@@ -8,8 +8,10 @@ use App\Entity\BuildingType;
 use App\Entity\Galaxy;
 use App\Entity\Planet;
 use App\Entity\Player;
+use App\Entity\QueueBuilding;
 use App\Entity\Resource;
 use App\Entity\SolarSystem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -73,6 +75,10 @@ class DashboardController extends AbstractDashboardController
         // Section actions
         yield MenuItem::section('Actions');
         yield MenuItem::linkToRoute('Build a building', 'fa fa-industry', 'index');
+
+        // Section files d'attente
+        yield MenuItem::section('Queues');
+        yield MenuItem::linkToCrud('Building queue', 'fa fa-industry', QueueBuilding::class);
 
     }
 }
