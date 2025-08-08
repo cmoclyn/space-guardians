@@ -29,8 +29,19 @@ readonly class BuildingService
         private CalculateHelper $calculateHelper,
     ) {}
 
+    public function isBuildingQueueBusy(Planet $planet): bool
+    {
+        $planetBuildings = $planet->getBuildings()->findFirst(function(int $index, PlanetBuildings $planetBuildings): bool{
+            return $planetBuildings->getQueue() !== null;
+        });
+        return $planetBuildings !== null;
+    }
+
     public function build(Planet $planet, Building $building): void
     {
+        if($this->isBuildingQueueBusy($planet)){
+            throw new QueueIsBusyException($planet);
+        }
         // On récupère l'entité représentant la combinaison Planet/Bâtiment
         $buildingToImprove = $planet->getBuildings()->findFirst(
             function (int $index, PlanetBuildings $planetBuildings) use ($building): bool {
