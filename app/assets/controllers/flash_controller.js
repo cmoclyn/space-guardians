@@ -8,7 +8,6 @@ export default class extends Controller {
     async fetchAndDisplay() {
         const response = await fetch('/flash/messages');
         const flashes = await response.json();
-        console.log('flashes', flashes);
 
         for (const [type, messages] of Object.entries(flashes)) {
             messages.forEach(message => this.showToast(message, type));

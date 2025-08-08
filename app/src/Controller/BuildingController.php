@@ -31,19 +31,6 @@ class BuildingController extends AbstractController
         ]);
     }
 
-    #[Route('/planet/{planet}/buildingQueue', name: 'building_queue')]
-    public function buildingQueue(Planet $planet, #[CurrentUser] User $user): Response
-    {
-        if (!$user->getPlayers()->contains($planet->getOwner())) {
-            throw $this->createAccessDeniedException();
-        }
-        $building = $this->buildingService->getBuildingQueue($planet);
-
-        return $this->render('components/buildingQueue.html.twig', [
-            'building' => $building,
-        ]);
-    }
-
     #[Route('/planet/{planet}/build/{building}', name: 'building_queue')]
     public function build(Planet $planet, Building $building, #[CurrentUser] User $user): Response
     {

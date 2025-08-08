@@ -47,7 +47,6 @@ export default class extends Controller {
         });
 
         if (response.status === 204) {
-            console.log('Construction lancée !');
             const event = new CustomEvent('buildingQueue:started', {
                 bubbles: true,
                 detail: {}

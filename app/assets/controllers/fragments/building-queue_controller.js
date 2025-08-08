@@ -7,6 +7,10 @@ export default class extends Controller {
     };
 
     connect() {
+        const refresh = function(){
+            this.refresh();
+        }.bind(this);
+        document.addEventListener('buildingQueue:started', refresh);
         this.refresh();
     }
 

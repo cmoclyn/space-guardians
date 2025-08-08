@@ -3,14 +3,26 @@ import {Controller} from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = ['name', 'remainingTime', 'progressBar'];
 
+    hasData = false;
     name = '';
     level = 0;
     startedAt = Date.now();
     finishedAt = Date.now();
 
     connect() {
-        this.updateRemainingTime();
-        this.interval = setInterval(() => this.updateRemainingTime(), 1000);
+        this.hide();
+    }
+
+    hide(){
+        this.nameTarget.classList.add('hidden');
+        this.remainingTimeTarget.classList.add('hidden');
+        this.progressBarTarget.classList.add('hidden');
+    }
+
+    show(){
+        this.nameTarget.classList.remove('hidden');
+        this.remainingTimeTarget.classList.remove('hidden');
+        this.progressBarTarget.classList.remove('hidden');
     }
 
     disconnect() {
@@ -57,6 +69,7 @@ export default class extends Controller {
 
     init() {
         this.updateRemainingTime();
+        this.show();
         this.interval = setInterval(() => this.updateRemainingTime(), 1000);
 
         const interval = function () {
@@ -68,12 +81,26 @@ export default class extends Controller {
         if (typeof this.interval != 'undefined') {
             clearInterval(this.interval);
         }
-        // TODO Update buildingQueue from back
+        this.hide();
+
+        if(this.hasData) {
+            const parentElement = this.element.closest('[data-controller~="fragments--building-queue"]');
+            if (!parentElement) return;
+
+            const parentController = this.application.getControllerForElementAndIdentifier(parentElement, 'fragments--building-queue');
+            if (parentController && typeof parentController.refresh === 'function') {
+                parentController.refresh();
+            }
+        }
     }
 
     load(buildingQueue) {
-        this.clear();
-        console.log(buildingQueue)
+        if(Object.entries(buildingQueue).length === 0){
+            this.hasData = false;
+            this.clear();
+            return;
+        }
+        this.hasData = true;
         this.name = buildingQueue.name;
         this.level = buildingQueue.level + 1;
         this.startedAt = Math.floor(new Date(buildingQueue.startedAt).getTime() / 1000);

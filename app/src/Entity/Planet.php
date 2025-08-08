@@ -129,6 +129,13 @@ class Planet
         return $this->buildings;
     }
 
+    public function getActualBuildingQueue(): ?PlanetBuildings
+    {
+        return $this->getBuildings()->findFirst(function (int $index, PlanetBuildings $planetBuildings): bool {
+            return $planetBuildings->getQueue() !== null;
+        });
+    }
+
     public function addBuilding(PlanetBuildings $building): static
     {
         if (!$this->buildings->contains($building)) {

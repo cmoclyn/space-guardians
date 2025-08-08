@@ -31,10 +31,7 @@ readonly class BuildingService
 
     public function isBuildingQueueBusy(Planet $planet): bool
     {
-        $planetBuildings = $planet->getBuildings()->findFirst(function(int $index, PlanetBuildings $planetBuildings): bool{
-            return $planetBuildings->getQueue() !== null;
-        });
-        return $planetBuildings !== null;
+        return $planet->getActualBuildingQueue() !== null;
     }
 
     public function build(Planet $planet, Building $building): void
