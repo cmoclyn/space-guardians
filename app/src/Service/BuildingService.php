@@ -3,24 +3,21 @@
 namespace App\Service;
 
 use App\DTO\BuildingDTO;
-use App\DTO\PriceDTO;
 use App\DTO\QueueBuildingDTO;
 use App\Entity\Building;
 use App\Entity\BuildingResource;
 use App\Entity\Planet;
 use App\Entity\PlanetBuildings;
-use App\Entity\PlanetResource;
-use App\Entity\PlayerExperience;
 use App\Entity\QueueBuilding;
-use App\Entity\Resource;
 use App\Exception\NotEnoughResourceException;
-use App\Repository\ExperienceRepository;
-use App\Repository\PlayerRepository;
+use App\Exception\QueueIsBusyException;
+use App\Helper\CalculateHelper;
 use App\Repository\QueueBuildingRepository;
 use App\Repository\ResourceRepository;
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Exception\UnexpectedValueException;
+use UnexpectedValueException;
 
 readonly class BuildingService
 {
@@ -29,6 +26,7 @@ readonly class BuildingService
         private ResourceRepository $resourceRepository,
         private QueueBuildingRepository $queueBuildingRepository,
         private ResourceService $resourceService,
+        private CalculateHelper $calculateHelper,
     ) {}
 
     public function build(Planet $planet, Building $building): void
@@ -43,30 +41,23 @@ readonly class BuildingService
         $this->entityManager->beginTransaction();
 
         try {
-            if (null === $buildingToImprove) {
-                $buildingToImprove = (new PlanetBuildings())
-                    ->setBuilding($building)
-                    ->setPlanet($planet)
-                    ->setLevel(1);
-                $this->entityManager->persist($buildingToImprove);
-            }
-
-            // On met à jour la quantité des ressources utilisées par ce bâtiment
-            $buildingToImprove->getBuilding()?->getBasePrices()->map(
-                function (BuildingResource $buildingResource) use ($planet) {
-                    $this->resourceService->updatePlanetResources($planet, $buildingResource->getResource());
-                },
-            );
+            // On met à jour la quantité des ressources de cette planète
+            $this->resourceService->updatePlanetResources($planet);
 
             $nextLevel = $buildingToImprove->getLevel() + 1;
+            $buildingTime = $this->calculateHelper->calculateBuildTime($building, $nextLevel);
+
+            $startedDate = new DateTime();
+            $finishedDate = clone $startedDate;
+            $finishedDate->modify("+{$buildingTime} seconds");
 
             $queueBuilding = (new QueueBuilding())
                 ->setPlanetBuildings($buildingToImprove)
-                ->setStartedAt(new DateTimeImmutable())
-                ->setFinishedAt(new DateTimeImmutable('tomorrow'));
+                ->setStartedAt(DateTimeImmutable::createFromMutable($startedDate))
+                ->setFinishedAt(DateTimeImmutable::createFromMutable($finishedDate));
             $this->entityManager->persist($queueBuilding);
 
-            $costs = $this->getBuildingCosts($building, $nextLevel);
+            $costs = $this->calculateHelper->getBuildingCosts($building, $nextLevel);
             foreach ($costs as $cost) {
                 $resource = $this->resourceRepository->findOneBy(['name' => $cost->getResourceName()]);
                 if (null === $resource) {
@@ -133,11 +124,7 @@ readonly class BuildingService
         $finishedDate = $queueBuilding->getFinishedAt();
 
         $planet = $planetBuilding->getPlanet();
-        $planetBuilding->getBuilding()?->getBasePrices()->map(
-            function (BuildingResource $buildingResource) use ($planet, $finishedDate) {
-                $this->resourceService->updatePlanetResources($planet, $buildingResource->getResource(), $finishedDate);
-            },
-        );
+        $this->resourceService->updatePlanetResources($planet, $finishedDate);
 
         $planetBuilding->setLevel($planetBuilding->getLevel() + 1);
         $planetBuilding->setQueue(null);
@@ -155,46 +142,15 @@ readonly class BuildingService
         return $planet->getBuildings()->map(function (PlanetBuildings $planetBuildings) use ($planet): BuildingDTO {
             $building = $planetBuildings->getBuilding();
             $level = $planetBuildings->getLevel();
-            return new BuildingDTO($building, $level, $this->getBuildingCosts($building, $level + 1));
+            return new BuildingDTO(
+                $building,
+                $level,
+                $this->calculateHelper->getBuildingCosts($building, $level + 1),
+                $this->calculateHelper->calculateBuildTime($building, $level + 1),
+            );
         })->toArray();
     }
 
-    /**
-     * @param Building $building
-     * @param int $level
-     * @return PriceDTO[]
-     */
-    public function getBuildingCosts(Building $building, int $level): array
-    {
-        $costs = [];
-        $resources = $this->resourceRepository->findAll();
-
-        /** @var Resource $resource */
-        foreach ($resources as $resource) {
-            $cost = $this->getBuildingCost($building, $resource, $level + 1);
-            $costs[] = new PriceDTO($resource->getName(), $cost);
-        }
-        return $costs;
-    }
-
-    public function getBuildingCost(Building $building, Resource $resource, int $level): int
-    {
-        $buildingResource = $building->getBasePrices()->findFirst(
-            function (int $index, BuildingResource $buildingResource) use ($resource) {
-                return $buildingResource->getResource() === $resource;
-            },
-        );
-
-        if (null === $buildingResource) {
-            throw new \UnexpectedValueException('Building resource not found');
-        }
-
-        $baseCost = $buildingResource->getQuantity();
-        $cost = ($baseCost * $level * 1.5) ** 2;
-        $scaling = 0.01 * (1.35 ** $level);
-        $rarity = $resource->getCoef();
-        return round(($cost * $scaling) / ($rarity ** ($level)));
-    }
 
     public function getBuildingQueue(Planet $planet): ?QueueBuildingDTO
     {
@@ -207,21 +163,4 @@ readonly class BuildingService
         );
     }
 
-    public function calculateBuildTime(Building $building, mixed $level): int
-    {
-        $resources = $this->resourceRepository->findAll();
-        $totalCost = 0;
-        foreach ($resources as $resource) {
-            $totalCost += $this->getBuildingCost($building, $resource, $level);
-        }
-        return ($totalCost * 1.5) ** 0.6;
-    }
-
-    public function calculateMaxStorage(Building $building, Resource $resource, int $level): int
-    {
-        $nextLevelCost = $this->getBuildingCost($building, $resource, $level + 1);
-        $marge = $nextLevelCost * 1.2;
-
-        return $this->resourceService->roundToNiceNumber($marge);
-    }
 }

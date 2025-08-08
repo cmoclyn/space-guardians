@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Building;
+use App\Helper\CalculateHelper;
 use App\Repository\ResourceRepository;
 
 class ChartService
@@ -12,8 +13,7 @@ class ChartService
 
     public function __construct(
         private readonly ResourceRepository $resourceRepository,
-        private readonly BuildingService $buildingService,
-        private readonly ResourceService $resourceService,
+        private readonly CalculateHelper $calculateHelper,
     ) {}
 
     public function getCostsData(Building $building): array
@@ -29,7 +29,7 @@ class ChartService
             $data['datasets'][] = [
                 'label' => $resource->getName(),
                 'data' => array_map(
-                    fn(int $level) => $this->buildingService->getBuildingCost($building, $resource, $level),
+                    fn(int $level) => $this->calculateHelper->getBuildingCost($building, $resource, $level),
                     range(1, self::MAX_LEVEL),
                 ),
                 'borderColor' => self::COLORS[$index],
@@ -47,7 +47,7 @@ class ChartService
             'datasets' => [
                 [
                     'label' => 'Temps de construction (s)',
-                    'data' => array_map(fn($level) => $this->buildingService->calculateBuildTime($building, $level),
+                    'data' => array_map(fn($level) => $this->calculateHelper->calculateBuildTime($building, $level),
                         range(1, self::MAX_LEVEL)),
                     'borderColor' => 'green',
                     'fill' => false,
@@ -58,7 +58,7 @@ class ChartService
 
     public function getProductionData(Building $building): ?array
     {
-        if ($building->getType()?->getName() !== 'Ressource') {
+        if ($building->getType()?->getName() !== 'Production de ressource') {
             return null;
         }
 
@@ -68,7 +68,7 @@ class ChartService
                 [
                     'label' => 'Production par heure',
                     'data' => array_map(
-                        fn($level) => $this->resourceService->calculateProductionForBuilding($building, $level),
+                        fn($level) => $this->calculateHelper->calculateProductionForBuilding($building, $level),
                         range(1, self::MAX_LEVEL),
                     ),
                     'borderColor' => 'orange',
@@ -80,14 +80,14 @@ class ChartService
 
     public function getStorageData(Building $building): ?array
     {
-        if ($building->getType()?->getName() !== 'Ressource') {
+        if ($building->getType()?->getName() !== 'Stockage de ressource') {
             return null;
         }
 
         $resources = $this->resourceRepository->findAll();
 
         $data = [
-            'labels' => range(1, self::MAX_LEVEL),
+            'labels' => range(0, self::MAX_LEVEL),
             'datasets' => [],
         ];
 
@@ -95,8 +95,8 @@ class ChartService
             $data['datasets'][] = [
                 'label' => $resource->getName(),
                 'data' => array_map(
-                    fn(int $level) => $this->buildingService->calculateMaxStorage($building, $resource, $level),
-                    range(1, self::MAX_LEVEL),
+                    fn(int $level) => $this->calculateHelper->calculateMaxStorage($resource, $level),
+                    range(0, self::MAX_LEVEL),
                 ),
                 'borderColor' => self::COLORS[$index],
                 'fill' => false,
