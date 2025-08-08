@@ -16,6 +16,10 @@
     </div>
 
     <div>
+        <h3 class="font-semibold text-sm mb-2 text-gray-300">Temps de construction : {{ building.constructionTime }}</h3>
+    </div>
+
+    <div>
         <h3 class="font-semibold text-sm mb-2 text-gray-300">Coût pour niveau {{ building.level + 1 }} :</h3>
         <ul class="space-y-1">
             {% for price in building.prices %}

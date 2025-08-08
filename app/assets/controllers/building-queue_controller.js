@@ -75,12 +75,12 @@ export default class extends Controller {
         this.clear();
         console.log(buildingQueue)
         this.name = buildingQueue.name;
-        this.level = buildingQueue.level;
+        this.level = buildingQueue.level + 1;
         this.startedAt = Math.floor(new Date(buildingQueue.startedAt).getTime() / 1000);
         this.finishedAt = Math.floor(new Date(buildingQueue.finishedAt).getTime() / 1000);
 
         if (this.hasNameTarget) {
-            this.nameTarget.textContent = `${buildingQueue.name} (niveau ${buildingQueue.level})`;
+            this.nameTarget.textContent = `${buildingQueue.name} (niveau ${this.level})`;
         }
 
         this.init();

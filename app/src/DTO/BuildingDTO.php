@@ -13,16 +13,16 @@ readonly class BuildingDTO
     private array $prices;
     private string $description;
     private int $level;
-    private float $constructionTime;
+    private int $constructionTime;
 
-    public function __construct(Building $building, int $level, array $pricesDto)
+    public function __construct(Building $building, int $level, array $pricesDto, int $constructionTime)
     {
         $this->id = $building->getId();
         $this->name = $building->getName();
         $this->image = $building->getImage();
         $this->description = $building->getDescription();
         $this->level = $level;
-        $this->constructionTime = 0;
+        $this->constructionTime = $constructionTime;
         $this->prices = $pricesDto;
     }
 
@@ -31,9 +31,28 @@ readonly class BuildingDTO
         return $this->id;
     }
 
-    public function getConstructionTime(): float
+    public function getConstructionTime(): string
     {
-        return $this->constructionTime;
+        $seconds = $this->constructionTime;
+        $d = floor($seconds / (3600 * 24));
+        $h = floor($seconds / 3600);
+        $m = floor(($seconds % 3600) / 60);
+        $s = floor($seconds % 60);
+
+        $parts = [];
+        if ($d > 0) {
+            $parts[] = "{$d}j";
+        }
+
+        if ($h > 0 || $d > 0) {
+            $parts[] = "{$h}h";
+        }
+
+        if ($m > 0 || $h > 0 || $d > 0) {
+            $parts[] = "{$m}min";
+        }
+        $parts[] = "{$s}s";
+        return implode(' ', $parts);
     }
 
     public function getLevel(): int
