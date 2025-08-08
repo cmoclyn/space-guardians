@@ -13,8 +13,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
@@ -24,6 +26,7 @@ class BuildingCrudController extends AbstractCrudController
     public function __construct(
         private readonly ChartBuilderInterface $chartBuilder,
         private readonly ChartService $chartService,
+        private readonly Filesystem $filesystem,
     ) {}
 
     public function configureActions(Actions $actions): Actions
@@ -38,9 +41,19 @@ class BuildingCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $renderDir = 'uploads/images/building/';
+        $uploadDir = sprintf('/public/%s/', $renderDir);
+        $absoluteDir = sprintf('%s/%s', $projectDir, $uploadDir);
+
+        if (!$this->filesystem->exists($absoluteDir)) {
+            $this->filesystem->mkdir($absoluteDir);
+        }
+
         return [
             TextField::new('name'),
             TextareaField::new('description'),
+            ImageField::new('image')->setUploadDir($uploadDir)->setBasePath($renderDir),
             AssociationField::new('type'),
             CollectionField::new('basePrices')->useEntryCrudForm()->setEntryIsComplex(),
         ];

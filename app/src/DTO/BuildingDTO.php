@@ -19,7 +19,7 @@ readonly class BuildingDTO
     {
         $this->id = $building->getId();
         $this->name = $building->getName();
-        $this->image = '';
+        $this->image = $building->getImage();
         $this->description = $building->getDescription();
         $this->level = $level;
         $this->constructionTime = 0;
