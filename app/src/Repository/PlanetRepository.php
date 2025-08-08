@@ -26,4 +26,16 @@ class PlanetRepository extends ServiceEntityRepository
             ->getSingleResult()
             ;
     }
+
+    /**
+     * @return Planet[]
+     */
+    public function getPlanetsWithOwner(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.owner is not null')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
